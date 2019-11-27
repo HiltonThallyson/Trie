@@ -1,9 +1,6 @@
 package br.ufrn.imd.edb2.trie;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class Trie {
     private TrieNode root = new TrieNode();
@@ -110,53 +107,54 @@ public class Trie {
         return true;
     }
 
-    public ArrayList<String> autoComplete(String word){
-        if(root.getChildrens().isEmpty()){
+    public ArrayList<String> autoComplete(String prefix) {
+        if (root.getChildrens().isEmpty()) {
             return null;
         }
         ArrayList<String> retorno = new ArrayList<>();
-        HashMap <Character, TrieNode> children = root.getChildrens();
-        TrieNode prefix = null;
+        HashMap<Character, TrieNode> children = root.getChildrens();
+        TrieNode prefixNode = null;
         TrieNode currentNode = root;
         char currentChar;
 
-        for(int i=0; i < word.length(); i ++){
-            currentChar = word.charAt(i);
+        for (int i = 0; i < prefix.length(); i++) {
+            currentChar = prefix.charAt(i);
             currentNode = children.get(currentChar);
 
-            if(currentNode == null){
+            if (currentNode == null) {
                 return null;
             }
 
             children = currentNode.getChildrens();
         }
-        prefix = currentNode;
+        prefixNode = currentNode;
 
-        if(currentNode.isWord()){
-            retorno.add(word);
+        if (currentNode.isWord()) {
+            retorno.add(prefix);
         }
 
-        if(children == null){
+        if (children == null) {
             return retorno;
         }
 
+        Set<Character> charList = children.keySet();
 
-//        ArrayList<TrieNode> nodes = (ArrayList)children.values();
-//
-//        for (TrieNode node: nodes) {
-//            if(node.isWord()){
-//
-//            }
-//        }
-
+        goingThroughTrie(charList, retorno, prefix, children);
     }
 
-//    public Character getKeyByValue(HashMap<Character,TrieNode> children, TrieNode value){
-//        for(Map.Entry<Character,TrieNode> entry : children.entrySet()){
-//            if(Objects.equals(value, entry.getValue())){
-//                return entry.getKey();
-//            }
-//        }
-//        return null;
-//    }
+    private void goingThroughTrie(Set<Character> charList, ArrayList<String> retorno, String prefix, HashMap<Character, TrieNode> children) {
+        for (Character c: charList) {
+            TrieNode node = children.get(c);
+            StringBuffer tempWord = new StringBuffer();
+            tempWord.append(prefix);
+            tempWord.append(c);
+            if(node.isWord()){
+                retorno.add(tempWord.toString());
+            }
+            if(!node.getChildrens().isEmpty()){
+
+            }
+        }
+    }
+
 }
