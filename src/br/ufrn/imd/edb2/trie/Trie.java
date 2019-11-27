@@ -1,6 +1,9 @@
 package br.ufrn.imd.edb2.trie;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class Trie {
     private TrieNode root = new TrieNode();
@@ -66,20 +69,20 @@ public class Trie {
     //TODO fazer remoção e autocompletar
     //Remoção
     public boolean remove(String word) {
-        HashMap<Character, TrieNode> parent = root.getChildrens();
+        if (root.getChildrens().isEmpty()) {
+            return false;
+        }
+        HashMap<Character, TrieNode> children = root.getChildrens();
         TrieNode currentNode;
         TrieNode lastPrefix = null;
         char currentChar;
         char keyDeleted = '\0';
-        if (parent.isEmpty()) {
-            return false;
-        }
         for (int i = 0; i < word.length(); i++) {
             currentChar = word.charAt(i);
 
-            if (parent.containsKey(currentChar)) {
-                currentNode = parent.get(word.charAt(i));
-                parent = currentNode.getChildrens();
+            if (children.containsKey(currentChar)) {
+                currentNode = children.get(word.charAt(i));
+                children = currentNode.getChildrens();
             }else{
                 return false;
             }
@@ -87,7 +90,7 @@ public class Trie {
 
             if(i == word.length()-1){
                 if(currentNode.isWord()){
-                    if(!parent.isEmpty()){
+                    if(!children.isEmpty()){
                         currentNode.setWord(false);
                     }else if(lastPrefix == null){
                         root.getChildrens().remove(word.charAt(0));
@@ -98,7 +101,7 @@ public class Trie {
                     return false;
                 }
             }else{
-                if(parent.size()>1 || currentNode.isWord()){
+                if(children.size()>1 || currentNode.isWord()){
                     lastPrefix = currentNode;
                     keyDeleted = word.charAt(i+1);
                 }
@@ -106,4 +109,54 @@ public class Trie {
         }
         return true;
     }
+
+    public ArrayList<String> autoComplete(String word){
+        if(root.getChildrens().isEmpty()){
+            return null;
+        }
+        ArrayList<String> retorno = new ArrayList<>();
+        HashMap <Character, TrieNode> children = root.getChildrens();
+        TrieNode prefix = null;
+        TrieNode currentNode = root;
+        char currentChar;
+
+        for(int i=0; i < word.length(); i ++){
+            currentChar = word.charAt(i);
+            currentNode = children.get(currentChar);
+
+            if(currentNode == null){
+                return null;
+            }
+
+            children = currentNode.getChildrens();
+        }
+        prefix = currentNode;
+
+        if(currentNode.isWord()){
+            retorno.add(word);
+        }
+
+        if(children == null){
+            return retorno;
+        }
+
+
+//        ArrayList<TrieNode> nodes = (ArrayList)children.values();
+//
+//        for (TrieNode node: nodes) {
+//            if(node.isWord()){
+//
+//            }
+//        }
+
+    }
+
+//    public Character getKeyByValue(HashMap<Character,TrieNode> children, TrieNode value){
+//        for(Map.Entry<Character,TrieNode> entry : children.entrySet()){
+//            if(Objects.equals(value, entry.getValue())){
+//                return entry.getKey();
+//            }
+//        }
+//        return null;
+//    }
 }
