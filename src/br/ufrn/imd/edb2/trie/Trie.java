@@ -152,6 +152,8 @@ public class Trie {
         Set<Character> charList = children.keySet();
 
         goingThroughTrie(charList, retorno, prefix, children);
+        CompareBySizeThenLexi comparator = new CompareBySizeThenLexi();
+        Collections.sort(retorno, comparator);
 
         return retorno;
     }
@@ -191,8 +193,12 @@ public class Trie {
 
         Set<Character> charList = children.keySet();
 
-        goingThroughTrie(charList, retorno, prefix, children, quantidade);
-
+        goingThroughTrie(charList, retorno, prefix, children);
+        CompareBySizeThenLexi comparator = new CompareBySizeThenLexi();
+        Collections.sort(retorno, comparator);
+        while(retorno.size() > quantidade){
+            retorno.remove(quantidade);
+        }
         return retorno;
     }
 
@@ -212,24 +218,4 @@ public class Trie {
             }
         }
     }
-
-    private void goingThroughTrie(Set<Character> charList, ArrayList<String> retorno, String prefix, HashMap<Character, TrieNode> children, int quantidade) {
-        for (Character c: charList) {
-            TrieNode node = children.get(c);
-            StringBuffer tempWord = new StringBuffer();
-            tempWord.append(prefix);
-            tempWord.append(c);
-            if(node.isWord()){
-                if(retorno.size() < quantidade) {
-                    retorno.add(tempWord.toString());
-                }
-            }
-            if(!node.getChildrens().isEmpty()){
-                Set<Character> characterTmp = node.getChildrens().keySet();
-
-                goingThroughTrie(characterTmp, retorno, tempWord.toString(), node.getChildrens(), quantidade);
-            }
-        }
-    }
-
 }
