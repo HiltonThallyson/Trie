@@ -11,6 +11,9 @@ public class Trie {
 
     //Inserção funcionando
     public void insert(String word) {
+        if(word == null){
+            return;
+        }
         HashMap<Character, TrieNode> children = root.getChildrens();
 
         for (int i = 0; i < word.length(); i++) {
@@ -29,12 +32,15 @@ public class Trie {
 
     //Busca funcionando
     public boolean search(String word) {
+        if(word == null){
+            return false;
+        }
         StringBuffer resultWord = new StringBuffer();
         String retorno = null;
         retorno = search(root, word, resultWord, 0);
-        if(retorno == null){
+        if (retorno == null) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
@@ -66,6 +72,9 @@ public class Trie {
     //TODO fazer remoção e autocompletar
     //Remoção
     public boolean remove(String word) {
+        if(word == null){
+            return false;
+        }
         if (root.getChildrens().isEmpty()) {
             return false;
         }
@@ -80,27 +89,27 @@ public class Trie {
             if (children.containsKey(currentChar)) {
                 currentNode = children.get(word.charAt(i));
                 children = currentNode.getChildrens();
-            }else{
+            } else {
                 return false;
             }
 
 
-            if(i == word.length()-1){
-                if(currentNode.isWord()){
-                    if(!children.isEmpty()){
+            if (i == word.length() - 1) {
+                if (currentNode.isWord()) {
+                    if (!children.isEmpty()) {
                         currentNode.setWord(false);
-                    }else if(lastPrefix == null){
+                    } else if (lastPrefix == null) {
                         root.getChildrens().remove(word.charAt(0));
-                    }else{
+                    } else {
                         lastPrefix.getChildrens().remove(keyDeleted);
                     }
-                }else{
+                } else {
                     return false;
                 }
-            }else{
-                if(children.size()>1 || currentNode.isWord()){
+            } else {
+                if (children.size() > 1 || currentNode.isWord()) {
                     lastPrefix = currentNode;
-                    keyDeleted = word.charAt(i+1);
+                    keyDeleted = word.charAt(i + 1);
                 }
             }
         }
@@ -108,6 +117,9 @@ public class Trie {
     }
 
     public ArrayList<String> autoComplete(String prefix) {
+        if(prefix == null){
+            return null;
+        }
         if (root.getChildrens().isEmpty()) {
             return null;
         }
@@ -129,7 +141,7 @@ public class Trie {
         }
         prefixNode = currentNode;
 
-        if (currentNode.isWord()) {
+        if (prefixNode.isWord()) {
             retorno.add(prefix);
         }
 
@@ -140,6 +152,48 @@ public class Trie {
         Set<Character> charList = children.keySet();
 
         goingThroughTrie(charList, retorno, prefix, children);
+
+        return retorno;
+    }
+
+    public ArrayList<String> autoComplete(String prefix, int quantidade) {
+        if(prefix == null){
+            return null;
+        }
+        if (root.getChildrens().isEmpty()) {
+            return null;
+        }
+        ArrayList<String> retorno = new ArrayList<>();
+        HashMap<Character, TrieNode> children = root.getChildrens();
+        TrieNode prefixNode = null;
+        TrieNode currentNode = root;
+        char currentChar;
+
+        for (int i = 0; i < prefix.length(); i++) {
+            currentChar = prefix.charAt(i);
+            currentNode = children.get(currentChar);
+
+            if (currentNode == null) {
+                return null;
+            }
+
+            children = currentNode.getChildrens();
+        }
+        prefixNode = currentNode;
+
+        if (prefixNode.isWord()) {
+            retorno.add(prefix);
+        }
+
+        if (children == null) {
+            return retorno;
+        }
+
+        Set<Character> charList = children.keySet();
+
+        goingThroughTrie(charList, retorno, prefix, children, quantidade);
+
+        return retorno;
     }
 
     private void goingThroughTrie(Set<Character> charList, ArrayList<String> retorno, String prefix, HashMap<Character, TrieNode> children) {
@@ -152,7 +206,28 @@ public class Trie {
                 retorno.add(tempWord.toString());
             }
             if(!node.getChildrens().isEmpty()){
+                Set<Character> characterTmp = node.getChildrens().keySet();
 
+                goingThroughTrie(characterTmp, retorno, tempWord.toString(), node.getChildrens());
+            }
+        }
+    }
+
+    private void goingThroughTrie(Set<Character> charList, ArrayList<String> retorno, String prefix, HashMap<Character, TrieNode> children, int quantidade) {
+        for (Character c: charList) {
+            TrieNode node = children.get(c);
+            StringBuffer tempWord = new StringBuffer();
+            tempWord.append(prefix);
+            tempWord.append(c);
+            if(node.isWord()){
+                if(retorno.size() < quantidade) {
+                    retorno.add(tempWord.toString());
+                }
+            }
+            if(!node.getChildrens().isEmpty()){
+                Set<Character> characterTmp = node.getChildrens().keySet();
+
+                goingThroughTrie(characterTmp, retorno, tempWord.toString(), node.getChildrens(), quantidade);
             }
         }
     }
