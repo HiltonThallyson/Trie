@@ -12,8 +12,36 @@ public class TrieTest {
     }
 
     @org.junit.Test
-    public void insertIfWord() {
+    public void insertIfWordIsntInsideTrie() {
         String word = "Cat";
+        trie.insert(word);
+        boolean result = false;
+
+        result = trie.search(word);
+
+        assertTrue(result);
+    }
+
+    @org.junit.Test
+    public void insertIfWordIsPrefixOfAnotherInsideTrie() {
+        String prefix = "Cat";
+        String word = "Catarro";
+
+        trie.insert(word);
+        trie.insert(prefix);
+        boolean result = false;
+
+        result = trie.search(prefix);
+
+        assertTrue(result);
+    }
+
+    @org.junit.Test
+    public void insertIfWordHasPrefixInsideTrie() {
+        String prefix = "Cat";
+        String word = "Catarro";
+
+        trie.insert(prefix);
         trie.insert(word);
         boolean result = false;
 
@@ -91,16 +119,35 @@ public class TrieTest {
     }
 
     @org.junit.Test
-    public void removeIfWordExist() {
+    public void removeIfWordExistAndHasNoChild() {
         String word = "Cat";
         boolean result = false;
 
         trie.insert("Cachorro");
         trie.insert("Amigo");
-        trie.insert("Cat");
-        result = trie.remove(word);
+        trie.insert(word);
+        trie.remove(word);
+        result = trie.search(word);
 
-        assertTrue(result);
+        assertFalse(result);
+    }
+
+    @org.junit.Test
+    public void removeIfWordExistAndHasChildren() {
+        String word = "Cat";
+        String child = "Catarro";
+        String child2 = "Categoria";
+        boolean result = false;
+        boolean childrenIsThere = false;
+        trie.insert(word);
+        trie.insert(child);
+        trie.insert(child2);
+        trie.insert("Cachorro");
+        trie.insert("Amigo");
+        result = trie.remove(word);
+        childrenIsThere = (trie.search(child) && trie.search(child2));
+
+        assertTrue(childrenIsThere);
     }
 
     @org.junit.Test

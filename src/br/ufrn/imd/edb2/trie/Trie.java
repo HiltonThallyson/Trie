@@ -15,19 +15,26 @@ public class Trie {
             return;
         }
         HashMap<Character, TrieNode> children = root.getChildrens();
-
+        TrieNode node = null;
         for (int i = 0; i < word.length(); i++) {
-            if (children.containsKey(word.charAt(i))) {
-                children = children.get(word.charAt(i)).getChildrens();
-            } else {
-                children.put(word.charAt(i), new TrieNode());
-                if (i < word.length() - 1) {
-                    children = children.get(word.charAt(i)).getChildrens();
-                } else {
-                    children.get(word.charAt(i)).setWord(true);
-                }
+            char currentChar = word.charAt(i);
+            if(!children.containsKey(currentChar)){
+                children.put(currentChar,new TrieNode());
             }
+            node = children.get(currentChar);
+            children = node.getChildrens();
+//            if (!children.containsKey(word.charAt(i))) {
+//                children = children.get(word.charAt(i)).getChildrens();
+//            } else {
+//                children.put(word.charAt(i), new TrieNode());
+//                if (i < word.length() - 1) {
+//                    children = children.get(word.charAt(i)).getChildrens();
+//                } else {
+//                    children.get(word.charAt(i)).setWord(true);
+//                }
+//            }
         }
+        node.setWord(true);
     }
 
     //Busca funcionando
