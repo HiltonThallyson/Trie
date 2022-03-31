@@ -23,16 +23,6 @@ public class Trie {
             }
             node = children.get(currentChar);
             children = node.getChildrens();
-//            if (!children.containsKey(word.charAt(i))) {
-//                children = children.get(word.charAt(i)).getChildrens();
-//            } else {
-//                children.put(word.charAt(i), new TrieNode());
-//                if (i < word.length() - 1) {
-//                    children = children.get(word.charAt(i)).getChildrens();
-//                } else {
-//                    children.get(word.charAt(i)).setWord(true);
-//                }
-//            }
         }
         node.setWord(true);
     }
@@ -76,7 +66,7 @@ public class Trie {
         return retorno;
     }
 
-    //TODO fazer remoção e autocompletar
+    
     //Remoção
     public boolean remove(String word) {
         if(word == null){
